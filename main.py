@@ -46,10 +46,6 @@ YELLOW = (255, 255, 0)
 DARK_BLUE = (0, 0, 200)
 GREY = (200, 200, 200)
 
-#display text setup ye
-pg.display.set_caption('Pendulum Sim')#changegs window name which makes a big difference
-my_font = pg.font.SysFont(pg.font.get_default_font(), 30)
-
 #math vars
 R = 200
 Vo = 0
@@ -62,14 +58,36 @@ omega = Vo/R #angular velocity
 x1 = centrePoint[0]
 y1 = (centrePoint[1]+R)
 x2 = centrePoint[0]
-y2 = (centrePoint[1]+R)
+y2 = centrePoint[1] + R
+θ = np.arctan2(x2 - centrePoint[0], y2 - centrePoint[1])
 #θ = 0
 x1fake = x1 - centrePoint[0]
 y1fake = y1 - centrePoint[1]
 x2fake = x2 - centrePoint[0]
 y2fake = y2 - centrePoint[1]
-θ = np.arccos((x1fake * x2fake + y1fake * y2fake) / (R * R))
 alpha = -(g / l) * np.sin(θ)
+
+#display text setup ye
+pg.display.set_caption('Pendulum Sim')#changegs window name which makes a big difference
+my_font = pg.font.SysFont(pg.font.get_default_font(), 30)
+x2t = f"X position relative to centre = {x2fake:.2f}"
+y2t = f"Y position relative to centre = {y2fake:.2f}"
+Vot = f"Vo = {Vo:.2f} (885 ≈ equilibrium)"
+Rt = f"R length = {R:.1f}"
+θt = f"radians = {θ:.2f}"
+
+def doText():
+    text_surfaceθ = my_font.render(θt, True, (0, 0, 0))
+    text_surfaceVo = my_font.render(Vot, True, (0, 0, 0))
+    text_surfaceRt = my_font.render(Rt, True, (0, 0, 0))
+    text_surfacex2 = my_font.render(x2t, True, (0, 0, 0))
+    text_surfacey2 = my_font.render(y2t, True, (0, 0, 0))
+
+    screen.blit(text_surfaceVo, (10, 10))
+    screen.blit(text_surfaceθ, (10, 50))
+    screen.blit(text_surfaceRt, (10, 90))
+    screen.blit(text_surfacex2, (800, 10))
+    screen.blit(text_surfacey2, (800, 50))
 
 #live plot stuff used ai for this
 time_history = []
@@ -116,7 +134,7 @@ while preRunning:
         #other way of writing what i wrote above without using cos and making code simpler-from ai
         θ = np.arctan2(x2 - centrePoint[0], y2 - centrePoint[1])
 
-    #keys (a = move pend. left, d = move pend. right, w = start sim. q = Vo +, e = Vo -)
+    #keys (a = move pend. left, d = move pend. right, w = start sim. q = Vo +, e = Vo -, z = increaseR, c = decreaseR)
     keys = pg.key.get_pressed()
     if keys[pg.K_a]:
         θ -= 0.05
@@ -136,6 +154,14 @@ while preRunning:
     if keys[pg.K_e]:
         Vo += 10
         omega = Vo / R
+    if keys[pg.K_z]:
+        R += 5
+        x2 = centrePoint[0] + R * np.sin(θ)
+        y2 = centrePoint[1] + R * np.cos(θ)
+    if keys[pg.K_c]:
+        R -= 5
+        x2 = centrePoint[0] + R * np.sin(θ)
+        y2 = centrePoint[1] + R * np.cos(θ)
     if keys[pg.K_w]:
         preRunning = False
         running = True
@@ -146,16 +172,12 @@ while preRunning:
     pg.draw.circle(screen, BLACK, (centrePoint[0], centrePoint[1]), 5)
     pg.draw.circle(screen, RED, (x2, y2), 10)
 
-    #text
     x2t = f"X position relative to centre = {x2fake:.2f}"
     y2t = f"Y position relative to centre = {y2fake:.2f}"
     Vot = f"Vo = {Vo:.2f} (885 ≈ equilibrium)"
-    text_surfacex2 = my_font.render(x2t, True, (0, 0, 0))
-    text_surfacey2 = my_font.render(y2t, True, (0, 0, 0))
-    text_surfaceVo = my_font.render(Vot, True, (0, 0, 0))
-    screen.blit(text_surfacex2, (10, 10))
-    screen.blit(text_surfacey2, (10, 50))
-    screen.blit(text_surfaceVo, (10, 90))
+    Rt = f"R length = {R:.1f}"
+    θt = f"radians = {θ:.2f}"
+    doText()
 
     graph_surf = get_graph_surface(time_history, θ_history)
     screen.blit(graph_surf, (800, 100))
@@ -207,11 +229,10 @@ while running:
     # text
     x2t = f"X position relative to centre = {x2fake:.2f}"
     y2t = f"Y position relative to centre = {y2fake:.2f}"
-    text_surfacex2 = my_font.render(x2t, True, (0, 0, 0))
-    text_surfacey2 = my_font.render(y2t, True, (0, 0, 0))
-    screen.blit(text_surfacex2, (10, 10))
-    screen.blit(text_surfacey2, (10, 50))
-    screen.blit(text_surfaceVo, (10, 90))
+    Vot = f"Vo = {Vo:.2f} (885 ≈ equilibrium)"
+    Rt = f"R length = {R:.1f}"
+    θt = f"radians = {θ:.2f}"
+    doText()
 
     #necessary stuff
     pg.display.flip()
