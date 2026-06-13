@@ -1,2 +1,2 @@
 I made a simulation of a simple Pendulum using pygame numpy and matplotlib. It has the ability to change the variables for theta, inital velocity and radius. Matplotlib displays an animated graph of the radians compared to time to creat a sin wave when radians are less than +/-0.5. I use pygame to make another animation of the pendulum swinging.
-Click link for demo: https://github.com/madmanmr/PendulumSim2/releases/download/PendSIm2/main.exe
+Click link for demo: https://madmanmr.github.io/
